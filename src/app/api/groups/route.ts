@@ -44,8 +44,9 @@ export async function POST(req: NextRequest) {
     );
     await conn.commit();
     return NextResponse.json({ groupId, inviteCode }, { status: 201 });
-  } catch {
+  } catch (err) {
     await conn.rollback();
+    console.error("Failed to create group:", err);
     return NextResponse.json({ error: "Failed to create group" }, { status: 500 });
   } finally {
     conn.release();

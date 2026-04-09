@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { createSessionCookie } from "@/lib/session";
-import crypto from "crypto";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   const { name, email, password, phone } = await req.json();
   if (!name || !email || !password) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
-  const hashed = crypto.createHash("sha256").update(password).digest("hex");
+  const hashed = await bcrypt.hash(password, 12);
   try {
     const [result] = await pool.query(
       "INSERT INTO Users (Name, Email, Password, Phone) VALUES (?, ?, ?, ?)",
